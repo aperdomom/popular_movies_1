@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+
+    <!-- Titles -->
+    <string name="title_movie_detail">Movie Detail</string>
+
+    <!--Labels -->
+    <string name="label_title_movie">Title:</string>
+    <string name="label_overview_movie">Synopsis:</string>
+    <string name="label_vote_average_movie">Ranting:</string>
+    <string name="label_release_date_movie">Release date:</string>
+    <string name="label_most_popular">Most popular</string>
+    <string name="label_highest_rated">Highest rated</string>
+
+    <!-- Actions -->
+    <string name="action_sort">Sort</string>
+    <string name="action_most_popular">Sort by most popular</string>
+    <string name="action_highest_rated">Sort by highest rated</string>
+
+</resources>

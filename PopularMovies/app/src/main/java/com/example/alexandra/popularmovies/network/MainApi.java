@@ -1,6 +1,8 @@
 package com.example.alexandra.popularmovies.network;
 
 import com.example.alexandra.popularmovies.network.responses.MoviesListResponse;
+import com.example.alexandra.popularmovies.network.responses.ReviewsListResponse;
+import com.example.alexandra.popularmovies.network.responses.VideosListResponse;
 
 import retrofit.Callback;
 import retrofit.http.GET;
@@ -17,7 +19,18 @@ public interface MainApi {
                           Callback<MoviesListResponse> callback);
 
     @GET("/movie/{ID}/images")
-    void getMovieImages(@Path("ID")String showId,
+    void getMovieImages(@Query("api_key")String apiKey,
+                        @Path("ID")String movieId,
                         Callback<MoviesListResponse> callback);
+
+    @GET("/movie/{ID}/videos")
+    void getMovieVideos(@Query("api_key")String apiKey,
+                          @Path("ID")long movieId,
+                        Callback<VideosListResponse> callback);
+
+    @GET("/movie/{ID}/reviews")
+    void getMovieReviews(@Query("api_key")String apiKey,
+                         @Path("ID")long movieId,
+                        Callback<ReviewsListResponse> callback);
 
 }

@@ -1,6 +1,7 @@
 package com.example.alexandra.popularmovies.activities;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
@@ -11,39 +12,32 @@ import android.widget.GridView;
 import com.example.alexandra.popularmovies.BuildConfig;
 import com.example.alexandra.popularmovies.R;
 import com.example.alexandra.popularmovies.fragments.MovieDetailFragment;
-import com.example.alexandra.popularmovies.fragments.MovieGridFragment;
 import com.example.alexandra.popularmovies.models.Movie;
 import com.example.alexandra.popularmovies.network.MainApi;
 import com.example.alexandra.popularmovies.network.responses.MoviesListResponse;
 import com.example.alexandra.popularmovies.views.MovieGridAdapter;
-import com.squareup.okhttp.OkHttpClient;
+import com.google.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.concurrent.TimeUnit;
 
 import retrofit.Callback;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
-import retrofit.client.OkClient;
 import retrofit.client.Response;
 import roboguice.activity.RoboActionBarActivity;
-import roboguice.inject.InjectView;
 
 
 public class MovieGridActivity
-        extends RoboActionBarActivity
-        implements MovieGridFragment.Callbacks {
+        extends RoboActionBarActivity {
     private static final int   MOST_POPULAR = 0;
     private static final int   HIGHEST_RATED = 1;
     private boolean            mTwoPane;
-    private MainApi            mainApi;
     private ArrayList<Movie>   mMovieArrayList;
     private MovieGridAdapter   mMovieGridAdapter;
-    @InjectView(R.id.gridViewMovies)
+    @Inject
+    public MainApi mainApi;
     private GridView           mGridViewMovies;
-    @InjectView(R.id.swipeRefreshGridView)
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
@@ -51,7 +45,9 @@ public class MovieGridActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_grid);
 
-        mMovieArrayList = new ArrayList<Movie>();
+        mGridViewMovies =  (GridView)findViewById (R.id.gridViewMovies);
+        mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeRefreshGridView);
+        mMovieArrayList = new ArrayList<>();
 
         mMovieGridAdapter = new MovieGridAdapter(this,
                 R.layout.item_movie,
@@ -60,26 +56,8 @@ public class MovieGridActivity
 
         if (findViewById(R.id.movie_detail_container) != null) {
             mTwoPane = true;
-            ((MovieGridFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.movie_grid))
-                    .setActivateOnItemClick(true);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-
-        OkHttpClient client = new OkHttpClient();
-        client.setConnectTimeout(
-                30,
-                TimeUnit.SECONDS
-        );
-        client.setReadTimeout(
-                120,
-                TimeUnit.SECONDS
-        );
-
-        final RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(BuildConfig.ENDPOINT
-                ).setClient(new OkClient(client)
-                ).build();
-        mainApi = restAdapter.create(MainApi.class);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -114,14 +92,18 @@ public class MovieGridActivity
             case R.id.sort_highest_rated:
                 getMoviesPopular(HIGHEST_RATED);
                 return true;
+            case R.id.sort_favorite:
+                getFavoriteMovies();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    @Override
     public void onItemSelected(String id) {
-        Movie movie = mMovieArrayList.get(Integer.parseInt(id));
+        Movie movie = Movie.getDBMovie(getApplicationContext(),
+                mMovieArrayList.get(Integer.parseInt(id)).getId()
+                );
         if (mTwoPane) {
             Bundle arguments = new Bundle();
             arguments.putParcelable(MovieDetailFragment.ARG_ITEM_ID,
@@ -160,6 +142,11 @@ public class MovieGridActivity
                                 }
                             }
                         }
+
+                        for (Movie movie : moviesListResponse.getMovieArrayList()) {
+                           movie.insert(getApplicationContext());
+                        }
+
                         if(sortBy == MOST_POPULAR){
                             Collections.sort(mMovieArrayList,
                                     new ComparatorHighestRated());
@@ -178,6 +165,15 @@ public class MovieGridActivity
                 });
     }
 
+    public void getFavoriteMovies() {
+        mMovieArrayList.clear();
+        ArrayList<Movie> favoriteMovies = Movie.getMovies(getApplicationContext());
+        if(favoriteMovies != null){
+            mMovieArrayList.addAll(favoriteMovies);
+        }
+        mMovieGridAdapter.notifyDataSetChanged();
+    }
+
     private class ComparatorMostPopular
             implements Comparator<Movie> {
         @Override
@@ -186,8 +182,6 @@ public class MovieGridActivity
                 return 0;
             return o1.getPopularity() > o2.getPopularity()? -1 : 1;
         }
-
-
     }
 
     private class ComparatorHighestRated
@@ -198,7 +192,5 @@ public class MovieGridActivity
                 return 0;
             return o1.getVoteAverage() > o2.getVoteAverage()? -1 : 1;
         }
-
-
     }
 }

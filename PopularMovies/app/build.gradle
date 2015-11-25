@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.0"
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "com.example.alexandra.popularmovies"
@@ -16,14 +16,14 @@ android {
             debuggable true
             buildConfigField "String", "ENDPOINT", "\"http://api.tmdb.org/3\""
             buildConfigField "String", "IMAGE_PATH", "\"http://image.tmdb.org/t/p/\""
-            buildConfigField "String", "API_KEY",  "\" api key here \""
+            buildConfigField "String", "API_KEY",  "\"087f281a73555fae1c479e87cc1d4b95\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
             buildConfigField "String", "ENDPOINT", "\"http://api.tmdb.org/3/movie/popular\""
             buildConfigField "String", "IMAGE_PATH", "\"http://image.tmdb.org/t/p/\""
-            buildConfigField "String", "API_KEY", "\"087f281a73555fae1c479e87cc1d4b95\""
+            buildConfigField "String", "API_KEY", "\"API key HERE\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -32,8 +32,9 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.0.0'
-    compile 'com.android.support:support-v4:23.0.0'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:support-v4:23.1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.retrofit:retrofit:1.6.1'
     compile 'com.squareup.okhttp:okhttp:2.3.0'

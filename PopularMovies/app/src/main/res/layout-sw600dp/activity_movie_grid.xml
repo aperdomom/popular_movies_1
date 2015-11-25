@@ -2,12 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="@dimen/layout_margin"
-    android:layout_marginRight="@dimen/layout_margin"
     android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
+              android:background="@color/windowBackground"
     tools:context=".MovieListActivity">
 
     <!--
@@ -15,16 +14,16 @@
     master/detail flow.
     -->
 
-    <fragment android:id="@+id/movie_grid"
+    <include android:id="@+id/movie_grid"
         android:name="com.example.alexandra.popularmovies.fragments.MovieGridFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        tools:layout="@android:layout/list_content" />
+        android:layout_weight="2"
+        layout="@layout/fragment_movie_list" />
 
     <FrameLayout android:id="@+id/movie_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3" />
+        android:layout_weight="2" />
 
 </LinearLayout>
